@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Fallback - Musée IBAM</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #050508;
+            color: #fff;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: rgba(15, 15, 25, 0.8);
+            border: 1px solid rgba(0,240,255,0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .test-title {
+            color: #00f0ff;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        .test-button {
+            background: linear-gradient(45deg, #00f0ff, #06ffa5);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            transform: scale(1.05);
+        }
+        .test-result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background: rgba(0,0,0,0.3);
+        }
+        .success { background: rgba(0,255,0,0.2); }
+        .error { background: rgba(255,0,0,0.2); }
+        .warning { background: rgba(255,255,0,0.2); color: #000; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 style="text-align: center; color: #00f0ff;">Test des Fallbacks - Musée IBAM</h1>
+        
+        <div class="test-section">
+            <h2 class="test-title">1. Détection WebGL</h2>
+            <button class="test-button" onclick="testWebGL()">Tester WebGL</button>
+            <div id="webgl-result" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2 class="test-title">2. Détection CSS 3D</h2>
+            <button class="test-button" onclick="testCSS3D()">Tester CSS 3D</button>
+            <div id="css3d-result" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2 class="test-title">3. Test Fallback CSS 3D</h2>
+            <button class="test-button" onclick="testCSS3DFallback()">Tester Fallback CSS 3D</button>
+            <div id="css3d-fallback-result" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2 class="test-title">4. Test Fallback Simple</h2>
+            <button class="test-button" onclick="testSimpleFallback()">Tester Fallback Simple</button>
+            <div id="simple-fallback-result" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2 class="test-title">5. Test Complet</h2>
+            <button class="test-button" onclick="runCompleteTest()">Lancer Test Complet</button>
+            <div id="complete-result" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2 class="test-title">6. Ouvrir Musée</h2>
+            <button class="test-button" onclick="window.open('index.html', '_blank')">Ouvrir Musée Complet</button>
+            <p>Ouvre le musée dans un nouvel onglet avec détection automatique des capacités.</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="css3d-fallback.js"></script>
+    <script src="simple-fallback.js"></script>
+    
+    <script>
+        function testWebGL() {
+            const result = document.getElementById('webgl-result');
+            try {
+                const canvas = document.createElement('canvas');
+                const hasWebGL = !!(window.WebGLRenderingContext && 
+                                   (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+                
+                if (hasWebGL) {
+                    result.className = 'test-result success';
+                    result.innerHTML = '✅ WebGL est supporté par votre navigateur';
+                } else {
+                    result.className = 'test-result warning';
+                    result.innerHTML = '⚠️ WebGL n\'est pas supporté, les fallbacks seront utilisés';
+                }
+            } catch (e) {
+                result.className = 'test-result error';
+                result.innerHTML = '❌ Erreur lors du test WebGL: ' + e.message;
+            }
+        }
+        
+        function testCSS3D() {
+            const result = document.getElementById('css3d-result');
+            try {
+                if (typeof detectCSS3DSupport === 'function') {
+                    const hasCSS3D = detectCSS3DSupport();
+                    if (hasCSS3D) {
+                        result.className = 'test-result success';
+                        result.innerHTML = '✅ CSS 3D est supporté par votre navigateur';
+                    } else {
+                        result.className = 'test-result warning';
+                        result.innerHTML = '⚠️ CSS 3D n\'est pas supporté';
+                    }
+                } else {
+                    result.className = 'test-result error';
+                    result.innerHTML = '❌ Fonction de détection CSS 3D non disponible';
+                }
+            } catch (e) {
+                result.className = 'test-result error';
+                result.innerHTML = '❌ Erreur lors du test CSS 3D: ' + e.message;
+            }
+        }
+        
+        async function testCSS3DFallback() {
+            const result = document.getElementById('css3d-fallback-result');
+            result.className = 'test-result';
+            result.innerHTML = '🔄 Test en cours...';
+            
+            try {
+                if (typeof initCSS3DFallback === 'function') {
+                    const success = await initCSS3DFallback();
+                    if (success) {
+                        result.className = 'test-result success';
+                        result.innerHTML = '✅ Fallback CSS 3D initialisé avec succès';
+                    } else {
+                        result.className = 'test-result error';
+                        result.innerHTML = '❌ Échec de l\'initialisation du fallback CSS 3D';
+                    }
+                } else {
+                    result.className = 'test-result error';
+                    result.innerHTML = '❌ Fonction de fallback CSS 3D non disponible';
+                }
+            } catch (e) {
+                result.className = 'test-result error';
+                result.innerHTML = '❌ Erreur lors du test fallback CSS 3D: ' + e.message;
+            }
+        }
+        
+        function testSimpleFallback() {
+            const result = document.getElementById('simple-fallback-result');
+            result.className = 'test-result';
+            result.innerHTML = '🔄 Test en cours...';
+            
+            try {
+                if (typeof initSimpleFallback === 'function') {
+                    const success = initSimpleFallback();
+                    if (success) {
+                        result.className = 'test-result success';
+                        result.innerHTML = '✅ Fallback Simple initialisé avec succès';
+                    } else {
+                        result.className = 'test-result error';
+                        result.innerHTML = '❌ Échec de l\'initialisation du fallback simple';
+                    }
+                } else {
+                    result.className = 'test-result error';
+                    result.innerHTML = '❌ Fonction de fallback simple non disponible';
+                }
+            } catch (e) {
+                result.className = 'test-result error';
+                result.innerHTML = '❌ Erreur lors du test fallback simple: ' + e.message;
+            }
+        }
+        
+        async function runCompleteTest() {
+            const result = document.getElementById('complete-result');
+            result.className = 'test-result';
+            result.innerHTML = '🔄 Test complet en cours...';
+            
+            let report = '<h3>Rapport de Test Complet:</h3>';
+            
+            // Test WebGL
+            try {
+                const canvas = document.createElement('canvas');
+                const hasWebGL = !!(window.WebGLRenderingContext && 
+                                   (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+                report += hasWebGL ? '<p>✅ WebGL: Supporté</p>' : '<p>⚠️ WebGL: Non supporté</p>';
+            } catch (e) {
+                report += '<p>❌ WebGL: Erreur</p>';
+            }
+            
+            // Test CSS 3D
+            try {
+                if (typeof detectCSS3DSupport === 'function') {
+                    const hasCSS3D = detectCSS3DSupport();
+                    report += hasCSS3D ? '<p>✅ CSS 3D: Supporté</p>' : '<p>⚠️ CSS 3D: Non supporté</p>';
+                } else {
+                    report += '<p>❌ CSS 3D: Fonction non disponible</p>';
+                }
+            } catch (e) {
+                report += '<p>❌ CSS 3D: Erreur</p>';
+            }
+            
+            // Test Fallbacks
+            report += '<h4>Tests des Fallbacks:</h4>';
+            
+            // Test CSS 3D Fallback
+            try {
+                if (typeof initCSS3DFallback === 'function') {
+                    const css3dSuccess = await initCSS3DFallback();
+                    report += css3dSuccess ? '<p>✅ Fallback CSS 3D: Fonctionnel</p>' : '<p>❌ Fallback CSS 3D: Échec</p>';
+                } else {
+                    report += '<p>❌ Fallback CSS 3D: Non disponible</p>';
+                }
+            } catch (e) {
+                report += '<p>❌ Fallback CSS 3D: Erreur</p>';
+            }
+            
+            // Test Simple Fallback
+            try {
+                if (typeof initSimpleFallback === 'function') {
+                    const simpleSuccess = initSimpleFallback();
+                    report += simpleSuccess ? '<p>✅ Fallback Simple: Fonctionnel</p>' : '<p>❌ Fallback Simple: Échec</p>';
+                } else {
+                    report += '<p>❌ Fallback Simple: Non disponible</p>';
+                }
+            } catch (e) {
+                report += '<p>❌ Fallback Simple: Erreur</p>';
+            }
+            
+            result.className = 'test-result success';
+            result.innerHTML = report;
+        }
+        
+        // Test automatique au chargement
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                runCompleteTest();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
+
