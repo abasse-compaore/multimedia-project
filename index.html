@@ -3,184 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Le Musée des Sciences et Technologies d'IBAM</title>
-    
-    <!-- Meta tags pour SEO et social sharing -->
-    <meta name="description" content="Découvrez l'histoire des sciences et technologies dans un musée virtuel 3D immersif">
-    <meta name="keywords" content="musée, sciences, technologies, 3D, interactif, IBAM">
-    <meta name="author" content="Musée des Sciences et Technologies d'IBAM">
-    
-    <!-- Open Graph pour réseaux sociaux -->
-    <meta property="og:title" content="Le Musée des Sciences et Technologies d'IBAM">
-    <meta property="og:description" content="Une expérience immersive 3D dans l'univers des sciences et technologies">
-    <meta property="og:type" content="website">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔬</text></svg>">
-    
-    <!-- Fonts -->
+    <title>Musée des Sciences et Technologies d'IBAM</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r158/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/postprocessing/EffectComposer.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/postprocessing/RenderPass.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/postprocessing/FilmPass.js"></script>
-    
-    <!-- Styles -->
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Loading Screen -->
+    <!-- Écran de chargement -->
     <div id="loading-screen">
         <div class="loading-container">
-            <div class="loading-logo">
-                <div class="holographic-title">
-                    <span class="title-main">IBAM</span>
-                    <span class="title-sub">MUSÉE DES SCIENCES</span>
+            <div class="hologram-title">
+                <h1 class="glitch" data-text="MUSÉE IBAM">MUSÉE IBAM</h1>
+                <p class="subtitle">Sciences et Technologies</p>
+            </div>
+            <div class="loading-bar-container">
+                <div class="loading-bar">
+                    <div class="loading-progress" id="loading-progress"></div>
                 </div>
+                <div class="loading-text" id="loading-text">Initialisation du musée... 0%</div>
             </div>
-            <div class="loading-bar">
-                <div class="loading-progress"></div>
-                <div class="loading-particles"></div>
-            </div>
-            <div class="loading-text">
-                <span id="loading-percentage">0%</span>
-                <span id="loading-status">Initialisation...</span>
-            </div>
+            <div class="particle-loader"></div>
         </div>
     </div>
 
-    <!-- Main Application -->
-    <div id="app" style="display: none;">
-        <!-- Three.js Canvas -->
-        <canvas id="three-canvas"></canvas>
-        
-        <!-- UI Overlay -->
-        <div id="ui-overlay">
-            <!-- Holographic Menu -->
-            <nav id="holographic-menu">
-                <div class="menu-toggle" id="menu-toggle">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-                
-                <div class="menu-content" id="menu-content">
-                    <div class="menu-section">
-                        <h3>GALERIES</h3>
-                        <ul class="gallery-list">
-                            <li class="gallery-item" data-gallery="ibam">
-                                <div class="gallery-icon">🔬</div>
-                                <span>Technologies IBAM</span>
-                                <div class="gallery-preview"></div>
-                            </li>
-                            <li class="gallery-item" data-gallery="modern-tech">
-                                <div class="gallery-icon">🤖</div>
-                                <span>Technologies Modernes</span>
-                                <div class="gallery-preview"></div>
-                            </li>
-                            <li class="gallery-item" data-gallery="old-tech">
-                                <div class="gallery-icon">⚗️</div>
-                                <span>Technologies Anciennes</span>
-                                <div class="gallery-preview"></div>
-                            </li>
-                            <li class="gallery-item" data-gallery="sciences-storie">
-                                <div class="gallery-icon">👨‍🔬</div>
-                                <span>Histoire des Sciences</span>
-                                <div class="gallery-preview"></div>
-                            </li>
-                        </ul>
-                    </div>
-                    
-                    <div class="menu-section">
-                        <h3>CONTROLES</h3>
-                        <div class="control-info">
-                            <p><span class="key">Souris</span> - Naviguer</p>
-                            <p><span class="key">Molette</span> - Zoomer</p>
-                            <p><span class="key">Clic</span> - Interagir</p>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
-            <!-- Information Panel -->
-            <div id="info-panel" class="info-panel hidden">
-                <div class="panel-header">
-                    <h2 id="panel-title">Titre</h2>
-                    <button class="close-btn" id="close-info">×</button>
-                </div>
-                <div class="panel-content">
-                    <div id="panel-media"></div>
-                    <div id="panel-text"></div>
+    <!-- Interface principale -->
+    <div id="main-interface" style="display: none;">
+        <!-- Menu holographique latéral -->
+        <nav id="holographic-menu" class="holographic-menu">
+            <div class="menu-header">
+                <h2>NAVIGATION</h2>
+                <div class="menu-line"></div>
+            </div>
+            <ul class="menu-items">
+                <li data-section="hall" class="menu-item active">
+                    <div class="menu-icon">🏛️</div>
+                    <span>Hall Central</span>
+                    <div class="menu-glow"></div>
+                </li>
+                <li data-section="ibam" class="menu-item">
+                    <div class="menu-icon">🎓</div>
+                    <span>Technologies IBAM</span>
+                    <div class="menu-glow"></div>
+                </li>
+                <li data-section="modern" class="menu-item">
+                    <div class="menu-icon">🤖</div>
+                    <span>Tech Moderne</span>
+                    <div class="menu-glow"></div>
+                </li>
+                <li data-section="old" class="menu-item">
+                    <div class="menu-icon">⚙️</div>
+                    <span>Tech Ancienne</span>
+                    <div class="menu-glow"></div>
+                </li>
+                <li data-section="science" class="menu-item">
+                    <div class="menu-icon">🔬</div>
+                    <span>Histoire Sciences</span>
+                    <div class="menu-glow"></div>
+                </li>
+            </ul>
+            <div class="menu-footer">
+                <div class="position-indicator">
+                    <span id="current-position">Hall Central</span>
                 </div>
             </div>
+        </nav>
 
-            <!-- Navigation Indicator -->
-            <div id="navigation-indicator">
-                <div class="compass">
-                    <div class="compass-needle" id="compass-needle"></div>
-                    <div class="compass-points">
-                        <span class="point north">N</span>
-                        <span class="point east">E</span>
-                        <span class="point south">S</span>
-                        <span class="point west">O</span>
-                    </div>
-                </div>
-                <div class="location-info">
-                    <span id="current-location">Hall Central</span>
-                </div>
-            </div>
+        <!-- Bouton toggle menu -->
+        <button id="menu-toggle" class="menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
 
-            <!-- Minimap -->
-            <div id="minimap">
-                <div class="minimap-container">
-                    <div class="minimap-view" id="minimap-view">
-                        <div class="minimap-player" id="minimap-player"></div>
-                        <div class="minimap-galleries">
-                            <div class="gallery-dot" data-gallery="ibam"></div>
-                            <div class="gallery-dot" data-gallery="modern-tech"></div>
-                            <div class="gallery-dot" data-gallery="old-tech"></div>
-                            <div class="gallery-dot" data-gallery="sciences-storie"></div>
-                        </div>
-                    </div>
-                </div>
+        <!-- Contrôles de caméra -->
+        <div id="camera-controls" class="camera-controls">
+            <button id="orbit-mode" class="control-btn active" title="Mode Orbital">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="12" cy="12" r="10"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+            </button>
+            <button id="reset-camera" class="control-btn" title="Réinitialiser Vue">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                    <path d="M21 3v5h-5"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Panneau d'information flottant -->
+        <div id="info-panel" class="info-panel">
+            <button class="close-btn" id="close-info">&times;</button>
+            <div class="info-content">
+                <h3 id="info-title"></h3>
+                <div id="info-media"></div>
+                <p id="info-description"></p>
             </div>
         </div>
 
-        <!-- Audio Elements -->
-        <audio id="ambient-audio" loop>
-            <source src="assets/ambient.mp3" type="audio/mpeg">
-        </audio>
-        
-        <!-- Transition Overlay -->
-        <div id="transition-overlay" class="hidden">
-            <div class="transition-content">
-                <div class="transition-text" id="transition-text">Chargement...</div>
-                <div class="transition-progress">
-                    <div class="transition-bar"></div>
-                </div>
+        <!-- Indicateur de position 3D -->
+        <div id="position-3d" class="position-3d">
+            <div class="compass">
+                <div class="compass-needle"></div>
+            </div>
+            <span id="section-name">Hall Central</span>
+        </div>
+
+        <!-- Instructions -->
+        <div id="instructions" class="instructions">
+            <div class="instruction-item">
+                <kbd>Clic gauche + Glisser</kbd>
+                <span>Rotation</span>
+            </div>
+            <div class="instruction-item">
+                <kbd>Molette</kbd>
+                <span>Zoom</span>
+            </div>
+            <div class="instruction-item">
+                <kbd>Clic</kbd>
+                <span>Interagir</span>
             </div>
         </div>
+
+        <!-- Audio toggle -->
+        <button id="audio-toggle" class="audio-toggle">
+            <svg id="audio-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+            </svg>
+        </button>
     </div>
 
-    <!-- Error Fallback -->
-    <div id="error-fallback" class="hidden">
-        <div class="error-content">
-            <h2>Erreur de chargement</h2>
-            <p>Votre navigateur ne supporte pas WebGL ou les performances sont insuffisantes.</p>
-            <button onclick="location.reload()">Réessayer</button>
-        </div>
-    </div>
+    <!-- Canvas Three.js -->
+    <canvas id="canvas3d"></canvas>
 
     <!-- Scripts -->
-    <script src="css3d-fallback.js"></script>
-    <script src="simple-fallback.js"></script>
-    <script src="app.js"></script>
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.152.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.152.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module" src="app.js"></script>
 </body>
 </html>
